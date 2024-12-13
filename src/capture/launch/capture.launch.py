@@ -10,7 +10,7 @@ def generate_launch_description():
 
     pkg_capture = FindPackageShare('capture')
 
-    params_path = PathJoinSubstitution([pkg_capture, 'params', 'project.yaml'])
+    params_path = PathJoinSubstitution([pkg_capture, 'params', 'capture.yaml'])
     # every time the params, rviz, or map path is replaced, the package has to be rebuilt.
 
 
@@ -32,7 +32,7 @@ def generate_launch_description():
         output='screen',
         remappings=[
             ("image", "/camera/image_raw")
-        ]
+        ],
     )
     ld.add_action(node_showimage)
 

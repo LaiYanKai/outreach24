@@ -25,31 +25,47 @@ namespace outreach24
         rclcpp::TimerBase::SharedPtr timer_main; // contains the timer that runs the main looping function at regular intervals.
 
         // ----------- Parameters ---------------
+        std::string topic;
+
+        // ----------- States -------------
+        bool need_capture;
 
     public:
         /** Constructor. Run only once when this node is first created in `main()`. */
         explicit Capture()
             : Node("capture")
         {
+            initStates();
             initParams();
             initTopics();
             initTimers();
         }
 
     private:
+        void initStates()
+        {
+            need_capture = false;
+        }
+
         /** Initializes and read parameters, if any. */
         void initParams()
         {
-            // initParam(this, "cost_exponent", cost_exponent);
-            // initParam(this, "circumscribed_radius", circumscribed_radius);
-            // initParam(this, "inflation_radius", inflation_radius);
-            // initParam(this, "max_cost", max_cost);
-            // initParam(this, "min_cost", min_cost);
+            topic = "/camera/image_raw"; // default value
+            initParam(this, "topic", topic);
         }
 
         /** Initializes topics and messages, if any. */
         void initTopics()
         {
+            sub_img = this->create_subscription<sensor_msgs::msg::Image>(
+                topic, rclcpp::SensorDataQoS(),
+                std::bind(&Capture::cbImg, this, std::placeholders::_1));
+        }
+
+        void cbImg(sensor_msgs::msg::Image::SharedPtr msg)
+        {
+            if (need_capture)
+                msg->data;
         }
 
         /** Initializes the timers with their callbacks.*/
@@ -63,7 +79,8 @@ namespace outreach24
         /** The function that is run at regular intervals */
         void cbTimer()
         {
-            std::cout << "hi " <<std::endl;
+            
+            
         }
     };
 }
