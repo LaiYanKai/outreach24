@@ -1,4 +1,6 @@
 capture:
   ros__parameters:
-    frequency: 20.0 # {double} [Hz]
     topic: "/camera/image_raw" # {double} [Hz]
+    img_prefix: "stop"
+    img_ext: "jpg"
+    img_num_zeros: 4
