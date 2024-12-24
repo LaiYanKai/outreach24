@@ -22,4 +22,9 @@ ROS_DOMAIN_ID=8 ros2 run camera_ros camera_node --ros-args -p width:=160 -p heig
 ./capture.sh
 ```
 3. To capture an image, simply type `c` into the terminal. The images will be stored in the `img` folder.
-4. To adjust the prefix label of the images (default is `stop`), extension (default `.jpg`), and other options, check out `src/capture/params/capture.yaml`.
+4. To adjust the prefix label of the images (default is `stop`), extension (default `.jpg`), and other options, check out `src/capture/params/capture.yaml`
+5. To preview the images, on another terminal on the remote PC:
+```bash
+ROS_DOMAIN=8 ros2 run image_tools showimage --remap /image:=/camera/image_raw
+```
+Note that the blue and red channels in the preview are swapped because of the format "BGR888" in the first instruction. The showimage window also shows the 100% size of the image, so small images will appear quite small, and large images may exceed the size of the computer monitor.
