@@ -28,3 +28,8 @@ ROS_DOMAIN_ID=8 ros2 run camera_ros camera_node --ros-args -p width:=160 -p heig
 ROS_DOMAIN=8 ros2 run image_tools showimage --remap /image:=/camera/image_raw
 ```
 Note that the blue and red channels in the preview are swapped because of the format "BGR888" in the first instruction. The showimage window also shows the 100% size of the image, so small images will appear quite small, and large images may exceed the size of the computer monitor.
+
+## Debug
+```bash
+ros2 run image_tools cam2image --ros-args -p burger_mode:=true --remap image:=camera/image_raw
+```
