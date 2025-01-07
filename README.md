@@ -32,4 +32,7 @@ Note that the blue and red channels in the preview are swapped because of the fo
 ## Debug
 ```bash
 ros2 run image_tools cam2image --ros-args -p burger_mode:=true --remap image:=camera/image_raw
+python3 -m pip uninstall setuptools
+python3 -m pip install setuptools
 ```
+
