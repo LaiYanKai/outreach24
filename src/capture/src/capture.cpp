@@ -25,6 +25,7 @@ namespace outreach24
     private:
         // ----------- Publishers / Subscribers --------------
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr sub_img;
+        sensor_msgs::msg::Image::SharedPtr img_;
 
         // // ----------- Timers -------------------
         rclcpp::TimerBase::SharedPtr timer_main; // contains the timer that runs the main looping function at regular intervals.
@@ -34,9 +35,11 @@ namespace outreach24
         std::string img_prefix;
         std::string img_ext;
         int num_zeros;
+        double period;
 
         // ----------- States -------------
         bool need_capture;
+        bool has_img;
         int i;
 
     public:
@@ -54,6 +57,7 @@ namespace outreach24
         void initStates()
         {
             need_capture = false;
+            has_img = false;
             i = 0;
         }
 
@@ -68,22 +72,63 @@ namespace outreach24
             initParam(this, "img_ext", img_ext);
             num_zeros = 4;
             initParam(this, "num_zeros", num_zeros);
+            period = 1;
+            initParam(this, "period", period);
         }
 
         /** Initializes topics and messages, if any. */
         void initTopics()
         {
+            auto qos = rclcpp::ServicesQoS();
+            // qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+            qos.keep_last(1);
             sub_img = this->create_subscription<sensor_msgs::msg::Image>(
-                topic, rclcpp::SensorDataQoS(),
+                topic, qos,
                 std::bind(&Capture::cbImg, this, std::placeholders::_1));
         }
 
         void cbImg(sensor_msgs::msg::Image::SharedPtr msg)
         {
-            if (need_capture)
-            {
-                cv_bridge::CvImagePtr img = cv_bridge::toCvCopy(msg);
+            img_ = msg;
+            has_img = true;
+        }
 
+        /** Initializes the timers with their callbacks.*/
+        void initTimers()
+        {
+            timer_main = this->create_wall_timer(
+                1s * period,
+                std::bind(&Capture::cbTimer, this));
+        }
+
+        /** The function that is run at regular intervals */
+        void cbTimer()
+        {
+            // char c;
+
+            // if (getch(c) == true || rclcpp::ok() == false)
+            // {
+            //     // std::cout << std::endl;
+            //     timer_main = nullptr;
+            //     return;
+            // }
+
+            // switch (c)
+            // {
+            // case 'C':
+            // case ' ':
+            // case 'c': // forward
+            //     // std::cout << "to capture" << std::endl;
+            //     need_capture = !need_capture;
+            //     break;
+
+            // default: // don't do anything.
+            //     break;
+            // }
+            // std::cout << "ca" << need_capture<< has_img << std::endl;
+
+            if (has_img){
+                cv_bridge::CvImagePtr img = cv_bridge::toCvCopy(img_);
                 std::ostringstream ss;
                 ss << "img/" << img_prefix << std::setw(num_zeros) << std::setfill('0') << i << "." << img_ext;
                 std::string fname = ss.str();
@@ -92,42 +137,8 @@ namespace outreach24
                 cv::imwrite(fname, img->image);
 
                 std::cout << fname << std::endl;
-
-                need_capture = false;
             }
-        }
-
-        /** Initializes the timers with their callbacks.*/
-        void initTimers()
-        {
-            timer_main = this->create_wall_timer(
-                0.1s,
-                std::bind(&Capture::cbTimer, this));
-        }
-
-        /** The function that is run at regular intervals */
-        void cbTimer()
-        {
-            char c;
-
-            if (getch(c) == true || rclcpp::ok() == false)
-            {
-                std::cout << std::endl;
-                timer_main = nullptr;
-                return;
-            }
-
-            switch (c)
-            {
-            case 'c': // forward
-                // std::cout << "to capture" << std::endl;
-                need_capture = true;
-                break;
-
-            default: // don't do anything.
-                break;
-            }
-            std::cout << "\r[" << c << "] ";
+            // std::cout << "\r[" << c << "] ";
             // std::cout << std::fixed;
             // std::cout << " LinVel("
             //           << std::setw(5) << std::setprecision(2) << msg_cmd_vel_.linear.x << ", "

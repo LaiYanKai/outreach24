@@ -21,6 +21,7 @@ def generate_launch_description():
         name='capture',
         output='screen',
         parameters=[params_path],
+        emulate_tty=True,
     )
     ld.add_action(node_capture)
 

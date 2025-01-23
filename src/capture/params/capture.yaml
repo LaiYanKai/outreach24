@@ -3,4 +3,5 @@ capture:
     topic: "/camera/image_raw" # {double} [Hz]
     img_prefix: "stop"
     img_ext: "jpg"
-    img_num_zeros: 4
+    img_num_zeros: 4 # {int}
+    period: 2.0 # {double} [s]

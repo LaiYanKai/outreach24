@@ -1,0 +1,12 @@
+path: /home/rhesa/datasets/traffic # dataset root dir
+train: images/ # train images (relative to 'path') 128 images
+val: images/ # val images (relative to 'path') 128 images
+test: # test images (optional)
+
+# Classes
+names:
+  0: stop
+  1: left
+  2: right
+  3: accelerate
+  4: deccelerate
